@@ -1,96 +1,59 @@
 # Identifying Key Entities in Recipe Data
 
-A small project that extracts and identifies important entities from recipe data (ingredients, quantities, units, cooking actions, times, temperatures, etc.). The project demonstrates data cleaning and named-entity extraction approaches using a Jupyter notebook.
+This repository contains a Jupyter notebook and supporting code for training a Named Entity Recognition (NER) model to extract key entities (quantities, units and ingredients) from recipe ingredient lines. The project uses a Conditional Random Fields (CRF) model (via sklearn-crfsuite) and demonstrates data preparation, feature engineering, training, and evaluation.
 
-## Overview
+Main notebook
 
-Recipes are semi-structured text where key information (what to use, how much, and what to do) is embedded in natural language. This repository collects recipe text and demonstrates techniques to automatically identify and extract those key entities so the data becomes structured and easier to analyze.
+- files/Identifying_Key_Entities_Recipe_Data.ipynb
 
-Primary goals:
-- Extract ingredient names, quantities, and units.
-- Identify cooking actions (e.g., "bake", "saute") and cooking times/temperatures.
-- Normalize entities where possible (e.g., convert "tbsp" → "tablespoon").
+Quick summary
 
-## What the notebook contains
+- Goal: Train a CRF-based NER model to label tokens in recipe ingredient strings as quantity, unit, ingredient, etc.
+- Data: A JSON file (ingredient_and_quantity.json) that contains two fields for each record: `input` (raw ingredient line) and `pos` (token-level labels). The notebook tokenizes these fields into `input_tokens` and `pos_tokens` and prepares them for CRF training.
+- Model: Uses sklearn-crfsuite to train a sequence-labeling model. The notebook contains feature extraction, model training, evaluation (classification reports, confusion matrix), and saving/loading the trained model.
 
-The Jupyter notebook in this repository (see the notebooks/ directory) includes:
-1. Loading sample recipe data (CSV/JSON/plain text).
-2. Basic text cleaning and tokenization.
-3. Rule-based extraction using regular expressions for quantities and units.
-4. Named-Entity Recognition (NER) using spaCy (optionally fine-tuning or using rule-based matchers).
-5. Post-processing to normalize units and consolidate entities.
-6. Example outputs and simple evaluation (manual inspection / example-based checks).
+How to run
 
-If you want me to extract exact code snippets and examples from the notebook and include them here, please tell me the notebook path (for example: `notebooks/Extract_Entities.ipynb`) or paste the notebook content. I can then update this README with accurate usage and code examples from the notebook.
+Option A — Run in Google Colab (recommended for reproducibility)
+1. Open the notebook `files/Identifying_Key_Entities_Recipe_Data.ipynb` in Colab.
+2. Make sure your dataset (`ingredient_and_quantity.json`) is available in your Google Drive (the notebook uses `/content/drive/MyDrive/ingredient_and_quantity.json` by default). Change the path in the notebook if you store the dataset elsewhere.
+3. Run the cells in order. The notebook installs `sklearn-crfsuite` and mounts Google Drive when needed.
 
-## Requirements
+Option B — Run locally
+1. Create a Python environment and install dependencies (example):
+   pip install pandas scikit-learn sklearn-crfsuite spacy joblib matplotlib seaborn
+2. Place `ingredient_and_quantity.json` in the working directory or update the file path in the notebook.
+3. Launch Jupyter and open `files/Identifying_Key_Entities_Recipe_Data.ipynb`.
 
-Minimum requirements (example — adapt to the project's notebook):
+Dependencies
+
 - Python 3.8+
-- Jupyter Notebook or JupyterLab
 - pandas
-- spaCy
-- regex (built-in `re`)
-- optionally scikit-learn or other libraries used in the notebook
+- scikit-learn
+- sklearn-crfsuite
+- spaCy (optional for additional NLP utilities)
+- joblib
+- matplotlib, seaborn
 
-Install with pip:
-```
-pip install -r requirements.txt
-```
-(Or, if there is no requirements file, install the main libs:)
-```
-pip install pandas spacy jupyter
-python -m spacy download en_core_web_sm
-```
+Notebook structure (high level)
 
-## How to run the notebook
+1. Imports and environment setup
+2. Data ingestion and basic exploration
+3. Tokenization of `input` and `pos` into `input_tokens` and `pos_tokens`
+4. Feature extraction for sequence labeling
+5. Train/test split and CRF training
+6. Evaluation and analysis
+7. Save/load trained model
 
-1. Clone the repository:
-```
-git clone https://github.com/sp-coding-enthusiast/Identifying_Key_Entities_Recipe_Data.git
-cd Identifying_Key_Entities_Recipe_Data
-```
-2. (Optional) Create and activate a virtual environment.
-3. Install dependencies (see Requirements above).
-4. Start Jupyter:
-```
-jupyter notebook
-```
-5. Open the notebook file (e.g., in `notebooks/`) and run the cells.
+Notes and tips
 
-## Example usage (high level)
+- The notebook currently expects the dataset to be read from Google Drive. If you prefer to store the dataset inside the repository, move `ingredient_and_quantity.json` into the repo (for example `data/ingredient_and_quantity.json`) and update the path used when loading the JSON.
+- The CRF model and the feature definitions in the notebook are flexible; you may experiment with additional token-level features (e.g., orthographic, lexical, word-shape, embedding lookups) to improve performance.
 
-- Load recipes into a DataFrame.
-- Apply cleaning and regular-expression-based parsing to split quantities and units.
-- Use spaCy's matcher or NER pipeline to tag ingredient names and actions.
-- Normalize units (e.g., `tsp`, `teaspoon`) and aggregate results into structured JSON/CSV.
+License
 
-## Output / Result format (example)
+This repository is provided under the MIT License — feel free to reuse and adapt the code.
 
-A structured row for a recipe line might look like:
-```json
-{
-  "original": "2 tbsp olive oil",
-  "quantity": 2,
-  "unit": "tablespoon",
-  "ingredient": "olive oil"
-}
-```
+Contact
 
-## Contributing
-
-If you'd like to improve this repository:
-- Add more sample recipes covering diverse formats.
-- Improve regex patterns and add more spaCy matchers.
-- Add unit tests for extraction functions.
-- Add a small evaluation dataset and simple metrics (precision/recall) for entity extraction.
-
-## License & Contact
-
-Add license information here (e.g., MIT) and your contact or GitHub profile for questions.
-
----
-
-If you want, I can:
-- Update this README with direct code snippets and example outputs pulled from your notebook. Provide the notebook path or allow me to read the repository's notebook files, and I will extract the exact code, usage examples, and outputs and commit the updated README for you.
-- Or I can commit the README draft above directly to the repository as an update.
+If you have suggestions or improvements, open an issue or contact `sp-coding-enthusiast` on GitHub.
